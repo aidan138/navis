@@ -1,0 +1,4 @@
+name: synthetic
+num_sequences: 100
+seq_len: 8
+num_views: 6

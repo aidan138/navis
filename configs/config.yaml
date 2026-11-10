@@ -1,0 +1,11 @@
+defaults:
+  - dataset: synthetic
+  - _self_
+
+seed: 0
+
+hydra:
+  run:
+    dir: outputs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: multirun/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
