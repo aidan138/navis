@@ -1,0 +1,82 @@
+[project]
+name = "navis"
+version = "0.1.0"
+description = "Measuring what individual camera views contribute to the internal memory of multi-camera driving models."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "hydra-core>=1.3.2",
+    "numpy>=1.26",
+    "torch>=2.6",
+    "torchvision>=0.21",
+    "wandb>=0.19",
+]
+
+[project.optional-dependencies]
+# Pick exactly one PyTorch build: `uv sync --extra cpu` or `uv sync --extra cu128`.
+cpu = ["torch>=2.6", "torchvision>=0.21"]
+cu128 = ["torch>=2.6", "torchvision>=0.21"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13",
+    "pre-commit>=4.0",
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.2,<0.9"]
+build-backend = "uv_build"
+
+# --------------------------------------------------------------------------- uv / PyTorch
+[tool.uv]
+conflicts = [[{ extra = "cpu" }, { extra = "cu128" }]]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu128", extra = "cu128" },
+]
+torchvision = [
+    { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu128", extra = "cu128" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+# --------------------------------------------------------------------------- tooling
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "scripts", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "NPY"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["navis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = ["slow: long-running tests (deselect with -m 'not slow')"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+check_untyped_defs = true
